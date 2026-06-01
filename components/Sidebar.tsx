@@ -19,6 +19,7 @@ import {
 import type { ProfileSettings } from "@/types/leadflow";
 import { DEFAULT_PROFILE } from "@/types/leadflow";
 import { fetchProfile } from "@/lib/database/profile";
+import AuthButton from "@/components/AuthButton";
 
 const sidebarLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -100,7 +101,9 @@ export default function Sidebar() {
             />
           ))}
         </nav>
-
+        <div className="mt-6">
+  <AuthButton expanded={expanded} />
+</div>
         <div
           className={`mt-6 overflow-hidden rounded-2xl border border-cyan-400/20 bg-cyan-400/10 transition-all duration-300 ${
             expanded ? "p-3" : "h-12 w-12 self-center p-2"
