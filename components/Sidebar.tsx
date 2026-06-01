@@ -19,6 +19,7 @@ import {
 import type { ProfileSettings } from "@/types/leadflow";
 import { DEFAULT_PROFILE } from "@/types/leadflow";
 import { fetchProfile } from "@/lib/database/profile";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import AuthButton from "@/components/AuthButton";
 
 const sidebarLinks = [
@@ -39,10 +40,23 @@ const sidebarLinks = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profile, setProfile] = useState<ProfileSettings>(DEFAULT_PROFILE);
 
   useEffect(() => {
-    async function loadProfile() {
+    const supabase = createSupabaseBrowserClient();
+
+    async function loadUserAndProfile() {
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        setIsLoggedIn(false);
+        setProfile(DEFAULT_PROFILE);
+        return;
+      }
+
+      setIsLoggedIn(true);
+
       try {
         const fetchedProfile = await fetchProfile();
         setProfile(fetchedProfile);
@@ -51,7 +65,29 @@ export default function Sidebar() {
       }
     }
 
-    loadProfile();
+    loadUserAndProfile();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const loggedIn = Boolean(session?.user);
+      setIsLoggedIn(loggedIn);
+
+      if (loggedIn) {
+        try {
+          const fetchedProfile = await fetchProfile();
+          setProfile(fetchedProfile);
+        } catch {
+          setProfile(DEFAULT_PROFILE);
+        }
+      } else {
+        setProfile(DEFAULT_PROFILE);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (
@@ -65,26 +101,44 @@ export default function Sidebar() {
       <div className="flex h-full flex-col p-3">
         <Link
           href="/"
-          className={`mb-8 overflow-hidden border border-cyan-400/20 bg-black shadow-[0_0_25px_rgba(34,211,238,0.08)] transition-all duration-300 ${
-            expanded ? "rounded-2xl p-3" : "mx-auto h-14 w-14 rounded-2xl p-2"
+          className={`mb-8 overflow-hidden transition-all duration-300 ${
+            expanded ? "p-3" : "mx-auto h-14 w-14 p-2"
           }`}
         >
-          {expanded ? (
-            <div className="flex items-center gap-3">
-              <ProfileImage src={profile.profileImage} size="large" />
+          {isLoggedIn ? (
+            expanded ? (
+              <div className="flex items-center gap-3">
+                <ProfileImage src={profile.profileImage} size="large" />
 
-              <div className="min-w-0">
-                <p className="truncate font-black text-white">
-                  {profile.displayName}
-                </p>
-                <p className="truncate text-xs font-semibold text-cyan-400">
-                  {profile.role}
-                </p>
+                <div className="min-w-0">
+                  <p className="truncate font-black text-white">
+                    {profile.displayName}
+                  </p>
+                  <p className="truncate text-xs font-semibold text-cyan-400">
+                    {profile.role}
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <ProfileImage src={profile.profileImage} size="small" />
+              </div>
+            )
+          ) : expanded ? (
+            <div className="flex items-center justify-center w-full">
+  <img
+    src="/logo.png"
+    alt="LeadFlow AI Logo"
+    className="h-10 w-auto object-contain"
+  />
+</div>
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <ProfileImage src={profile.profileImage} size="small" />
+              <img
+  src="/logo.png"
+  alt="LeadFlow AI Logo"
+  className="h-9 w-auto object-contain"
+/>
             </div>
           )}
         </Link>
@@ -101,24 +155,28 @@ export default function Sidebar() {
             />
           ))}
         </nav>
-        <div className="mt-6">
-  <AuthButton expanded={expanded} />
-</div>
-        <div
-          className={`mt-6 overflow-hidden rounded-2xl border border-cyan-400/20 bg-cyan-400/10 transition-all duration-300 ${
-            expanded ? "p-3" : "h-12 w-12 self-center p-2"
-          }`}
-        >
-          {expanded ? (
-            <p className="truncate text-center text-xs font-bold text-cyan-300">
-              {profile.tagline}
-            </p>
-          ) : (
-            <div className="flex h-full w-full items-center justify-center rounded-xl bg-cyan-400/10 text-xs font-black text-cyan-300">
-              LF
-            </div>
-          )}
+
+        <div className="mt-6 flex justify-center">
+          <AuthButton expanded={expanded} />
         </div>
+
+        {isLoggedIn && (
+          <div
+            className={`mt-3 overflow-hidden rounded-2xl border border-cyan-400/20 bg-cyan-400/10 transition-all duration-300 ${
+              expanded ? "p-3" : "h-12 w-12 self-center p-2"
+            }`}
+          >
+            {expanded ? (
+              <p className="truncate text-center text-xs font-bold text-cyan-300">
+                {profile.tagline}
+              </p>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-xl bg-cyan-400/10 text-xs font-black text-cyan-300">
+                LF
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </aside>
   );
@@ -179,7 +237,9 @@ function SidebarLink({
     >
       <Icon
         className={`h-5 w-5 shrink-0 transition-all duration-300 ${
-          expanded ? "mr-4 group-hover:-translate-x-1" : "group-hover:scale-110 group-hover:rotate-3"
+          expanded
+            ? "mr-4 group-hover:-translate-x-1"
+            : "group-hover:scale-110 group-hover:rotate-3"
         }`}
       />
 
