@@ -69,18 +69,11 @@ export default function Sidebar() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       const loggedIn = Boolean(session?.user);
       setIsLoggedIn(loggedIn);
-
-      if (loggedIn) {
-        try {
-          const fetchedProfile = await fetchProfile();
-          setProfile(fetchedProfile);
-        } catch {
-          setProfile(DEFAULT_PROFILE);
-        }
-      } else {
+    
+      if (!loggedIn) {
         setProfile(DEFAULT_PROFILE);
       }
     });
@@ -161,22 +154,20 @@ export default function Sidebar() {
         </div>
 
         {isLoggedIn && (
-          <div
-            className={`mt-3 overflow-hidden rounded-2xl border border-cyan-400/20 bg-cyan-400/10 transition-all duration-300 ${
-              expanded ? "p-3" : "h-12 w-12 self-center p-2"
-            }`}
-          >
-            {expanded ? (
-              <p className="truncate text-center text-xs font-bold text-cyan-300">
-                {profile.tagline}
-              </p>
-            ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-xl bg-cyan-400/10 text-xs font-black text-cyan-300">
-                LF
-              </div>
-            )}
-          </div>
-        )}
+  <div
+    className={`mt-3 flex items-center justify-center transition-all duration-300 ${
+      expanded ? "p-2" : "h-12 w-12 self-center"
+    }`}
+  >
+    <img
+      src="/logo.png"
+      alt="LeadFlow AI Logo"
+      className={`w-auto object-contain ${
+        expanded ? "h-10" : "h-8"
+      }`}
+    />
+  </div>
+)}
       </div>
     </aside>
   );
