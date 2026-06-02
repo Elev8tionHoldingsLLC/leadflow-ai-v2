@@ -143,12 +143,42 @@ export default function InsightsPage() {
           </div>
         )}
 
-        {loading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
-            <p className="font-bold text-zinc-400">Loading insights...</p>
-          </div>
-        ) : (
-          <>
+{loading ? (
+  <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
+    <p className="font-bold text-zinc-400">Loading insights...</p>
+  </div>
+) : deals.length === 0 && buyers.length === 0 && markets.length === 0 ? (
+  <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+    <Brain className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No insights yet
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      LeadFlow needs saved deals, buyers, or markets before it can generate
+      useful recommendations. Start by analyzing a property or adding your first
+      lead.
+    </p>
+
+    <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <Link
+        href="/analyzer"
+        className="inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-green-400"
+      >
+        Open Analyzer
+      </Link>
+
+      <Link
+        href="/deals"
+        className="inline-flex items-center justify-center gap-3 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-6 py-4 font-black text-cyan-300 transition hover:bg-cyan-400 hover:text-black"
+      >
+        Add Lead
+      </Link>
+    </div>
+  </section>
+) : (
+  <>
             <div className="mb-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               <InsightStat
                 title="Active Deals"

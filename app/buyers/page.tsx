@@ -19,6 +19,7 @@ import {
   deleteBuyer as deleteSupabaseBuyer,
   fetchBuyers,
 } from "@/lib/database/buyers";
+import toast from "react-hot-toast";
 
 const emptyBuyerForm = {
   name: "",
@@ -118,9 +119,9 @@ export default function BuyersPage() {
       setBuyers((currentBuyers) => [newBuyer, ...currentBuyers]);
       setForm(emptyBuyerForm);
       setShowForm(false);
-      setMessage("Buyer saved to Supabase.");
+      toast.success("Buyer saved to Supabase.");
     } catch (error) {
-      setMessage(
+      toast.error(
         error instanceof Error ? error.message : "Could not save buyer."
       );
     }
@@ -140,9 +141,9 @@ export default function BuyersPage() {
         currentBuyers.filter((buyer) => buyer.id !== id)
       );
 
-      setMessage("Buyer deleted.");
+      toast.success("Buyer deleted.");
     } catch (error) {
-      setMessage(
+      toast.error(
         error instanceof Error ? error.message : "Could not delete buyer."
       );
     }
@@ -175,12 +176,6 @@ export default function BuyersPage() {
             {showForm ? "Close Form" : "Add Buyer"}
           </button>
         </div>
-
-        {message && (
-          <div className="mb-8 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5 text-cyan-300">
-            <p className="font-bold">{message}</p>
-          </div>
-        )}
 
         <div className="mb-8 grid gap-5 md:grid-cols-3">
           <StatCard
@@ -306,18 +301,43 @@ export default function BuyersPage() {
         </div>
 
         {loading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
-            <p className="font-bold text-zinc-400">Loading buyers...</p>
-          </div>
-        ) : filteredBuyers.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-10 text-center">
-            <Users className="mx-auto mb-4 h-10 w-10 text-zinc-700" />
-            <h2 className="text-2xl font-black">No buyers found</h2>
-            <p className="mt-2 text-zinc-500">
-              Add your first buyer to start building your disposition system.
-            </p>
-          </div>
-        ) : (
+  <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
+    <p className="font-bold text-zinc-400">Loading buyers...</p>
+  </div>
+) : buyers.length === 0 && !searchTerm ? (
+  <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+    <Users className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No buyers saved yet
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Add your first buyer so LeadFlow can start matching your deals to real
+      investor contacts, markets, and price ranges.
+    </p>
+
+    <button
+      onClick={() => setShowForm(true)}
+      className="mt-6 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-green-400"
+    >
+      <Plus className="h-5 w-5" />
+      Add First Buyer
+    </button>
+  </section>
+) : filteredBuyers.length === 0 ? (
+  <section className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-10 text-center">
+    <Search className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No matching buyers found
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Try searching by buyer name, market, phone, email, or buyer type.
+    </p>
+  </section>
+) : (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {filteredBuyers.map((buyer) => (
               <BuyerCard

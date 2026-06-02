@@ -263,7 +263,11 @@ export default function ProfilePage() {
                     </div>
                   </Link>
                 ) : (
-                  <EmptyState text="No deals saved yet." />
+                  <EmptyState
+  text="No deals saved yet. Analyze your first property or add a lead manually to start building your operator profile."
+  href="/analyzer"
+  buttonText="Analyze First Deal"
+/>
                 )}
               </section>
 
@@ -308,7 +312,11 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 ) : (
-                  <EmptyState text="No markets saved yet." />
+                  <EmptyState
+  text="No markets saved yet. Add your first market so LeadFlow can start tracking your strongest hunting areas."
+  href="/markets"
+  buttonText="Add First Market"
+/>
                 )}
               </section>
             </div>
@@ -398,10 +406,30 @@ function MiniMetric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function EmptyState({ text }: { text: string }) {
+function EmptyState({
+  text,
+  href,
+  buttonText,
+}: {
+  text: string;
+  href?: string;
+  buttonText?: string;
+}) {
   return (
     <div className="rounded-2xl border border-dashed border-zinc-800 bg-black/40 p-6 text-center">
-      <p className="text-sm text-zinc-600">{text}</p>
+      <p className="mx-auto max-w-md text-sm leading-6 text-zinc-600">
+        {text}
+      </p>
+
+      {href && buttonText && (
+        <Link
+          href={href}
+          className="mt-5 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-5 py-3 font-black text-black transition hover:bg-green-400"
+        >
+          {buttonText}
+          <ArrowUpRight className="h-4 w-4" />
+        </Link>
+      )}
     </div>
   );
 }

@@ -28,6 +28,9 @@ export default function AnalyzerPage() {
   const [assignmentFee, setAssignmentFee] = useState("");
   const [sellerMotivation, setSellerMotivation] = useState<Motivation>("Medium");
   const [savedMessage, setSavedMessage] = useState("");
+  const [savedMessageType, setSavedMessageType] = useState<"success" | "error">(
+    "success"
+  );
   const [saving, setSaving] = useState(false);
 
   const analysis = useMemo(() => {
@@ -99,14 +102,22 @@ export default function AnalyzerPage() {
 
   async function saveLeadToPipeline() {
     if (!propertyAddress.trim()) {
+      setSavedMessageType("error");
       setSavedMessage("Add a property address before saving.");
       return;
     }
-
+  
+    if (analysis.arv <= 0) {
+      setSavedMessageType("error");
+      setSavedMessage("Add an estimated value / ARV before saving.");
+      return;
+    }
+  
     try {
       setSaving(true);
       setSavedMessage("");
-
+      setSavedMessageType("success");
+  
       await createDeal({
         address: propertyAddress.trim(),
         sellerName: "Unknown Seller",
@@ -125,9 +136,11 @@ export default function AnalyzerPage() {
           parseMoney(repairCost)
         )}. Assignment fee: ${formatMoney(parseMoney(assignmentFee))}.`,
       });
-
+  
+      setSavedMessageType("success");
       setSavedMessage("Lead saved to Supabase pipeline.");
     } catch (error) {
+      setSavedMessageType("error");
       setSavedMessage(
         error instanceof Error ? error.message : "Could not save lead."
       );
@@ -292,11 +305,17 @@ export default function AnalyzerPage() {
             </button>
 
             {savedMessage && (
-              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-green-400/20 bg-green-400/10 p-4 text-green-400">
-                <CheckCircle2 className="h-5 w-5" />
-                <p className="text-sm font-bold">{savedMessage}</p>
-              </div>
-            )}
+  <div
+    className={`mt-4 flex items-center gap-3 rounded-2xl border p-4 ${
+      savedMessageType === "success"
+        ? "border-green-400/20 bg-green-400/10 text-green-400"
+        : "border-red-400/20 bg-red-400/10 text-red-400"
+    }`}
+  >
+    <CheckCircle2 className="h-5 w-5" />
+    <p className="text-sm font-bold">{savedMessage}</p>
+  </div>
+)}
           </section>
 
           <section className="rounded-3xl border border-green-400/20 bg-zinc-950/80 p-6 backdrop-blur-xl">

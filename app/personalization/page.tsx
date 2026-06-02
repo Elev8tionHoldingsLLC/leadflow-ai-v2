@@ -13,10 +13,12 @@ import {
 import type { ProfileSettings } from "@/types/leadflow";
 import { DEFAULT_PROFILE } from "@/types/leadflow";
 import { fetchProfile, upsertProfile } from "@/lib/database/profile";
+import toast from "react-hot-toast";
 
 export default function PersonalizationPage() {
   const [profile, setProfile] = useState<ProfileSettings>(DEFAULT_PROFILE);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">("success");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -27,9 +29,10 @@ export default function PersonalizationPage() {
         const fetchedProfile = await fetchProfile();
         setProfile(fetchedProfile);
       } catch (error) {
-        setMessage(
-          error instanceof Error ? error.message : "Could not load profile."
-        );
+        setMessageType("error");
+setMessage(
+  error instanceof Error ? error.message : "Could not load profile."
+);
       } finally {
         setLoading(false);
       }
@@ -50,11 +53,13 @@ export default function PersonalizationPage() {
       setSaving(true);
       const updatedProfile = await upsertProfile(profile);
       setProfile(updatedProfile);
-      setMessage("Profile saved to Supabase.");
+      setMessageType("success");
+toast.success("Profile saved to Supabase.");
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : "Could not save profile."
-      );
+      setMessageType("error");
+toast.error(
+  error instanceof Error ? error.message : "Could not save profile."
+);
     } finally {
       setSaving(false);
     }
@@ -65,11 +70,13 @@ export default function PersonalizationPage() {
       setSaving(true);
       const updatedProfile = await upsertProfile(DEFAULT_PROFILE);
       setProfile(updatedProfile);
-      setMessage("Profile reset to default.");
+      setMessageType("success");
+toast.success("Profile reset to default.");
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : "Could not reset profile."
-      );
+      setMessageType("error");
+toast.error(
+  error instanceof Error ? error.message : "Could not reset profile."
+);
     } finally {
       setSaving(false);
     }
@@ -163,13 +170,6 @@ export default function PersonalizationPage() {
                 Reset Default
               </button>
             </div>
-
-            {message && (
-              <div className="mt-5 flex items-center gap-3 rounded-2xl border border-green-400/20 bg-green-400/10 p-4 text-green-400">
-                <CheckCircle2 className="h-5 w-5" />
-                <p className="text-sm font-bold">{message}</p>
-              </div>
-            )}
           </section>
 
           <aside className="rounded-3xl border border-zinc-800 bg-zinc-950 p-6">

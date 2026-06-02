@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Lock, LogIn, Mail } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const supabase = createSupabaseBrowserClient();
@@ -26,7 +27,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (error) {
-      setMessage(error.message);
+      toast.error(error.message);
       return;
     }
 

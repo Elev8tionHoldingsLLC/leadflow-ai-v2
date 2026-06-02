@@ -16,6 +16,7 @@ import {
 import type { Market } from "@/types/leadflow";
 import { createMarket, deleteMarket as deleteSupabaseMarket, fetchMarkets } from "@/lib/database/markets";
 import { clampScore, getHighestMarket } from "@/lib/scoring";
+import toast from "react-hot-toast";
 
 const emptyMarketForm = {
   name: "",
@@ -113,9 +114,9 @@ export default function MarketsPage() {
       setMarkets((currentMarkets) => [newMarket, ...currentMarkets]);
       setForm(emptyMarketForm);
       setShowForm(false);
-      setMessage("Market saved to Supabase.");
+      toast.success("Market saved to Supabase.");
     } catch (error) {
-      setMessage(
+      toast.error(
         error instanceof Error ? error.message : "Could not save market."
       );
     }
@@ -135,9 +136,9 @@ export default function MarketsPage() {
         currentMarkets.filter((market) => market.id !== id)
       );
 
-      setMessage("Market deleted.");
+      toast.success("Market deleted.");
     } catch (error) {
-      setMessage(
+      toast.error(
         error instanceof Error ? error.message : "Could not delete market."
       );
     }
@@ -170,12 +171,6 @@ export default function MarketsPage() {
             {showForm ? "Close Form" : "Add Market"}
           </button>
         </div>
-
-        {message && (
-          <div className="mb-8 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5 text-cyan-300">
-            <p className="font-bold">{message}</p>
-          </div>
-        )}
 
         <div className="mb-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
@@ -312,18 +307,43 @@ export default function MarketsPage() {
         </div>
 
         {loading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
-            <p className="font-bold text-zinc-400">Loading markets...</p>
-          </div>
-        ) : filteredMarkets.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-10 text-center">
-            <MapPin className="mx-auto mb-4 h-10 w-10 text-zinc-700" />
-            <h2 className="text-2xl font-black">No markets found</h2>
-            <p className="mt-2 text-zinc-500">
-              Add your first market to start building your hunting map.
-            </p>
-          </div>
-        ) : (
+  <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
+    <p className="font-bold text-zinc-400">Loading markets...</p>
+  </div>
+) : markets.length === 0 && !searchTerm ? (
+  <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+    <MapPin className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No markets tracked yet
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Add your first market so LeadFlow can help you compare investor activity,
+      competition, average prices, and your personal market rating.
+    </p>
+
+    <button
+      onClick={() => setShowForm(true)}
+      className="mt-6 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-green-400"
+    >
+      <Plus className="h-5 w-5" />
+      Add First Market
+    </button>
+  </section>
+) : filteredMarkets.length === 0 ? (
+  <section className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-10 text-center">
+    <Search className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No matching markets found
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Try searching by city, ZIP code, notes, rating, investor activity, or competition score.
+    </p>
+  </section>
+) : (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {filteredMarkets.map((market) => (
               <MarketCard

@@ -16,6 +16,7 @@ import { fetchBuyers } from "@/lib/database/buyers";
 import { fetchDeals } from "@/lib/database/deals";
 import { fetchMarkets } from "@/lib/database/markets";
 import { fetchProfile } from "@/lib/database/profile";
+import toast from "react-hot-toast";
 
 export default function ExportPage() {
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -23,6 +24,9 @@ export default function ExportPage() {
   const [markets, setMarkets] = useState<Market[]>([]);
   const [profile, setProfile] = useState<ProfileSettings>(DEFAULT_PROFILE);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "warning" | "error">(
+    "success"
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,6 +51,7 @@ export default function ExportPage() {
       setMarkets(fetchedMarkets);
       setProfile(fetchedProfile);
     } catch (error) {
+      setMessageType("error");
       setMessage(
         error instanceof Error ? error.message : "Could not load export data."
       );
@@ -73,7 +78,8 @@ export default function ExportPage() {
 
   function exportDeals() {
     if (deals.length === 0) {
-      setMessage("No saved deals to export yet.");
+      setMessageType("warning");
+      toast("No saved deals to export yet.");
       return;
     }
 
@@ -96,12 +102,14 @@ export default function ExportPage() {
     }));
 
     downloadCsv(rows, "leadflow-deals.csv");
-    setMessage("Deals exported successfully.");
+setMessageType("success");
+toast.success("Deals exported successfully.");
   }
 
   function exportBuyers() {
-    if (buyers.length === 0) {
-      setMessage("No buyers to export yet.");
+    if (deals.length === 0) {
+      setMessageType("warning");
+      toast("No buyers to export yet.");
       return;
     }
 
@@ -118,12 +126,14 @@ export default function ExportPage() {
     }));
 
     downloadCsv(rows, "leadflow-buyers.csv");
-    setMessage("Buyers exported successfully.");
+setMessageType("success");
+toast.success("Buyers exported successfully.");
   }
 
   function exportMarkets() {
-    if (markets.length === 0) {
-      setMessage("No markets to export yet.");
+    if (deals.length === 0) {
+      setMessageType("warning");
+      toast("No markets to export yet.");
       return;
     }
 
@@ -140,12 +150,14 @@ export default function ExportPage() {
     }));
 
     downloadCsv(rows, "leadflow-markets.csv");
-    setMessage("Markets exported successfully.");
+setMessageType("success");
+toast.success("Markets exported successfully.");
   }
 
   function exportEverything() {
     if (deals.length === 0 && buyers.length === 0 && markets.length === 0) {
-      setMessage("No data to export yet.");
+      setMessageType("warning");
+      toast("No data to export yet.");
       return;
     }
 
@@ -169,7 +181,9 @@ export default function ExportPage() {
     anchor.click();
 
     URL.revokeObjectURL(url);
-    setMessage("Full Supabase backup exported successfully.");
+  
+    setMessageType("success");
+    toast.success("Full Supabase backup exported successfully.");
   }
 
   return (
@@ -186,12 +200,6 @@ export default function ExportPage() {
             Export your Supabase deals, buyers, markets, and profile settings.
           </p>
         </div>
-
-        {message && (
-          <div className="mb-8 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5 text-cyan-300">
-            <p className="font-bold">{message}</p>
-          </div>
-        )}
 
         {loading ? (
           <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">

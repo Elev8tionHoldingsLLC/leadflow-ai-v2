@@ -21,6 +21,7 @@ import {
   fetchDeals,
   updateDealStatus,
 } from "@/lib/database/deals";
+import toast from "react-hot-toast";
 
 const emptyForm = {
   address: "",
@@ -102,9 +103,9 @@ export default function DealsPage() {
       setDeals((currentDeals) => [newDeal, ...currentDeals]);
       setForm(emptyForm);
       setShowForm(false);
-      setMessage("Lead saved to Supabase.");
+      toast.success("Lead saved to Supabase.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not save lead.");
+      toast.error(error instanceof Error ? error.message : "Could not save lead.");
     }
   }
 
@@ -133,9 +134,9 @@ export default function DealsPage() {
       await deleteDeal(id);
 
       setDeals((currentDeals) => currentDeals.filter((deal) => deal.id !== id));
-      setMessage("Lead deleted.");
+      toast.success("Lead deleted.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not delete lead.");
+      toast.error(error instanceof Error ? error.message : "Could not delete lead.");
     }
   }
 
@@ -177,12 +178,6 @@ export default function DealsPage() {
             {showForm ? "Close Form" : "Add Lead"}
           </button>
         </div>
-
-        {message && (
-          <div className="mb-8 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5 text-cyan-300">
-            <p className="font-bold">{message}</p>
-          </div>
-        )}
 
         <div className="mb-8 grid gap-5 md:grid-cols-4">
           <StatCard title="Total Leads" value={String(totalDeals)} />
@@ -240,11 +235,54 @@ export default function DealsPage() {
         </div>
 
         {loading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
-            <p className="font-bold text-zinc-400">Loading deals...</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 xl:grid-cols-7">
+  <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
+    <p className="font-bold text-zinc-400">Loading deals...</p>
+  </div>
+) : deals.length === 0 && !searchTerm ? (
+  <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+    <Building2 className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No leads saved yet
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Add your first lead manually or use the Property Analyzer to calculate the
+      numbers before saving it into your pipeline.
+    </p>
+
+    <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <button
+        onClick={() => setShowForm(true)}
+        className="inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-green-400"
+      >
+        <Plus className="h-5 w-5" />
+        Add First Lead
+      </button>
+
+      <Link
+        href="/analyzer"
+        className="inline-flex items-center justify-center gap-3 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-6 py-4 font-black text-cyan-300 transition hover:bg-cyan-400 hover:text-black"
+      >
+        Open Analyzer
+        <ArrowUpRight className="h-5 w-5" />
+      </Link>
+    </div>
+  </section>
+) : filteredDeals.length === 0 ? (
+  <section className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-10 text-center">
+    <Search className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No matching leads found
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Try searching by seller name, address, market, phone number, or status.
+    </p>
+  </section>
+) : (
+  <div className="grid gap-4 xl:grid-cols-7">
             {DEAL_STAGES.map((stage) => {
               const stageDeals = filteredDeals.filter((deal) => deal.status === stage);
 

@@ -188,19 +188,37 @@ export default function SearchPage() {
             <h2 className="text-2xl font-black">Loading search data...</h2>
           </section>
         ) : !query.trim() ? (
-          <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-8 text-center">
-            <Search className="mx-auto mb-4 h-10 w-10 text-zinc-700" />
-            <h2 className="text-2xl font-black">Start typing to search</h2>
-            <p className="mt-2 text-zinc-500">
-              Try a city, address, buyer name, task, score, or status.
+          <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+            <Search className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+        
+            <h2 className="text-3xl font-black text-white">
+              Search your command center
+            </h2>
+        
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+              Start typing to search across deals, buyers, markets, and follow-up tasks.
+              Try an address, seller name, buyer name, city, phone number, task note, or
+              deal status.
             </p>
+        
+            <div className="mx-auto mt-6 grid max-w-3xl gap-3 md:grid-cols-4">
+              <SearchHint text="Miami" />
+              <SearchHint text="New Lead" />
+              <SearchHint text="Cash" />
+              <SearchHint text="Follow up" />
+            </div>
           </section>
         ) : results.total === 0 ? (
-          <section className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-8 text-center">
-            <Search className="mx-auto mb-4 h-10 w-10 text-zinc-700" />
-            <h2 className="text-2xl font-black">No results found</h2>
-            <p className="mt-2 text-zinc-500">
-              Try a different keyword or check your saved data.
+          <section className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-10 text-center">
+            <Search className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+        
+            <h2 className="text-3xl font-black text-white">
+              No results found
+            </h2>
+        
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+              Nothing matched “{query}”. Try a simpler keyword like a city, seller name,
+              buyer type, phone number, status, or market.
             </p>
           </section>
         ) : (
@@ -262,7 +280,16 @@ export default function SearchPage() {
     </main>
   );
 }
-
+function SearchHint({ text }: { text: string }) {
+  return (
+    <button
+      type="button"
+      className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm font-bold text-cyan-300 transition hover:bg-cyan-400 hover:text-black"
+    >
+      {text}
+    </button>
+  );
+}
 function CountCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-zinc-800 bg-black p-4">

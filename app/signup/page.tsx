@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Lock, Mail, UserPlus } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import toast from "react-hot-toast";
 
 export default function SignupPage() {
   const supabase = createSupabaseBrowserClient();
@@ -31,11 +32,11 @@ export default function SignupPage() {
     setLoading(false);
 
     if (error) {
-      setMessage(error.message);
+      toast.error(error.message);
       return;
     }
 
-    setMessage(
+   toast.success(
       "Account created. Check your email to confirm your account, then log in."
     );
   }

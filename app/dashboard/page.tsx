@@ -115,12 +115,34 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {loading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
-            <p className="font-bold text-zinc-400">Loading dashboard...</p>
-          </div>
-        ) : (
-          <>
+{loading ? (
+  <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
+    <p className="font-bold text-zinc-400">Loading dashboard...</p>
+  </div>
+) : deals.length === 0 ? (
+  <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+    <Building2 className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No deals saved yet
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Start by analyzing your first property, then save it into your pipeline.
+      Once you do, your dashboard stats, recent leads, and pipeline breakdown
+      will appear here.
+    </p>
+
+    <Link
+      href="/analyzer"
+      className="mt-6 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-green-400"
+    >
+      Analyze First Deal
+      <ArrowUpRight className="h-5 w-5" />
+    </Link>
+  </section>
+) : (
+  <>
             <div className="mb-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               <StatCard
                 title="Total Leads"

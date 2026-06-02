@@ -89,7 +89,24 @@ export default function SettingsPage() {
             <StatusBox title="Backups" value="Export only" />
           </div>
         </section>
+        <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+  <div className="flex items-center gap-3">
+    <Settings2 className="h-6 w-6 text-cyan-400" />
+    <h2 className="text-2xl font-black">Future controls</h2>
+  </div>
 
+  <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-500">
+    These systems are not active yet, but this is where future automation
+    settings can live once the core app is stable.
+  </p>
+
+  <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <DisabledFeature title="AI Calling" />
+    <DisabledFeature title="SMS Follow-Ups" />
+    <DisabledFeature title="Comp Pulling" />
+    <DisabledFeature title="Skip Tracing" />
+  </div>
+</section>
         <section className="mt-8 rounded-3xl border border-red-400/20 bg-red-400/10 p-6">
           <div className="flex items-center gap-3">
             <RotateCcw className="h-6 w-6 text-red-400" />
@@ -144,6 +161,14 @@ function StatusBox({ title, value }: { title: string; value: string }) {
     <div className="rounded-2xl border border-zinc-800 bg-black p-4">
       <p className="text-sm font-bold text-zinc-500">{title}</p>
       <p className="mt-2 text-xl font-black text-cyan-400">{value}</p>
+    </div>
+  );
+}
+function DisabledFeature({ title }: { title: string }) {
+  return (
+    <div className="cursor-not-allowed rounded-2xl border border-zinc-800 bg-black p-4 opacity-50">
+      <p className="font-black text-white">{title}</p>
+      <p className="mt-2 text-sm text-zinc-600">Coming soon</p>
     </div>
   );
 }

@@ -114,12 +114,66 @@ export default function TasksPage() {
           </div>
         )}
 
-        {loading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
-            <p className="font-bold text-zinc-400">Loading tasks...</p>
-          </div>
-        ) : (
-          <>
+{loading ? (
+  <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-10 text-center">
+    <p className="font-bold text-zinc-400">Loading tasks...</p>
+  </div>
+) : deals.length === 0 ? (
+  <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+    <ClipboardList className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No leads saved yet
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Tasks are created from saved leads. Add a lead first, then open its detail
+      page and add a follow-up date, next action, or priority.
+    </p>
+
+    <Link
+      href="/deals"
+      className="mt-6 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-green-400"
+    >
+      Open Deals
+    </Link>
+  </section>
+) : taskData.filteredTasks.length === 0 && !searchTerm ? (
+  <section className="rounded-3xl border border-dashed border-cyan-400/20 bg-zinc-950 p-10 text-center">
+    <CheckCircle2 className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No tasks created yet
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      You have saved leads, but none of them have follow-up tasks yet. Open a
+      lead detail page and add a follow-up date, next action, priority, or task
+      notes.
+    </p>
+
+    <Link
+      href="/deals"
+      className="mt-6 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-green-400"
+    >
+      Add Tasks to Leads
+    </Link>
+  </section>
+) : taskData.filteredTasks.length === 0 ? (
+  <section className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-950 p-10 text-center">
+    <Search className="mx-auto mb-5 h-12 w-12 text-zinc-700" />
+
+    <h2 className="text-3xl font-black text-white">
+      No matching tasks found
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500">
+      Try searching by address, seller, market, next action, notes, or call
+      outcome.
+    </p>
+  </section>
+) : (
+  <>
             <div className="mb-8 grid gap-5 md:grid-cols-4">
               <StatCard
                 title="Overdue"
